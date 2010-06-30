@@ -1,0 +1,54 @@
+#!/usr/bin/ruby
+# S3Shuttle launcher script
+
+$LOAD_PATH << File.dirname(__FILE__) + "/../lib"
+
+require 's3_shuttle'
+
+@pid_file = S3Shuttle::Server.config["pid_path"]
+
+def write_pid_file
+	open(@pid_file, "w") { |f| f.write(Process.pid) }
+end
+def clear_pid_file
+	open(@pid_file, "w") { |f| f.write("") }
+end
+
+def safefork
+	tryagain = true
+	
+	while tryagain
+		tryagain = false
+		begin
+			if pid = fork
+				return pid
+			end
+		rescue Errno::EWOULDBLOCK
+			sleep 5
+			tryagain = true
+		end
+	end
+end
+
+safefork and exit
+at_exit do
+	clear_pid_file if @pid_file && File.exists?(@pid_file) && File.read(@pid_file).to_i == Process.pid
+end
+print "Starting S3Shuttle on port #{S3Shuttle::Server.config["port"]}..."
+trap("TERM") { exit(0) }
+sess_id = Process.setsid
+
+
+begin
+	S3Shuttle::Server.start
+	write_pid_file
+	print "Done (pid is #{Process.pid}).\n"
+	STDIN.reopen("/dev/null")														# Free file descriptors and
+	STDOUT.reopen(S3Shuttle::Server.config["log_path"]) # point them somewhere sensible
+	STDERR.reopen(STDOUT)																# STDOUT/STDERR should go to a logfile
+rescue
+	$stderr.puts "Error starting S3Shuttle: #{$!}"
+	$stderr.puts $!.backtrace
+	exit(1)
+end
+DRb.thread.join

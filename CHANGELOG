@@ -1,0 +1,11 @@
+*0.0.3*
+
+* Added exception handling
+
+*0.0.2*
+
+* Added s3_shuttle_status
+
+*0.0.1*
+
+* Created S3Shuttle project

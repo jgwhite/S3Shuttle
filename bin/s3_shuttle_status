@@ -1,0 +1,8 @@
+#!/usr/bin/ruby
+# S3Shuttle launcher script
+
+$LOAD_PATH << File.dirname(__FILE__) + "/../lib"
+
+require 's3_shuttle'
+
+puts S3Shuttle::Server.running? ? "S3Shuttle Server is running." : "S3Shuttle Server is not running."

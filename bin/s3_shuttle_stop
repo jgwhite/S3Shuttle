@@ -1,0 +1,27 @@
+#!/usr/bin/ruby
+# S3Shuttle shutdown script
+
+$LOAD_PATH << File.dirname(__FILE__) + "/../lib"
+
+require 's3_shuttle'
+
+def send_signal(signal, pid_file)
+	pid = open(pid_file).read.to_i
+	print "Sending #{signal} to S3Shuttle with PID #{pid}..."
+	begin
+		Process.kill(signal, pid)
+	rescue Errno::ESRCH
+		puts "Process does not exist. Not running. Removing stale pid file anyway."
+		open(pid_file, "w") { |f| f.write("") }
+	end
+	
+	puts "Done."
+end
+
+pid_file = S3Shuttle::Server.config["pid_path"]
+puts "Stopping S3Shuttle..."
+if File.file?(pid_file)
+	send_signal("TERM", pid_file) 
+else
+	puts "no pid file found"
+end

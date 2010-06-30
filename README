@@ -1,0 +1,41 @@
+= S3Shuttle -- Simple upload queue for Amazon S3 using DRb
+
+== Installation
+
+The prefered method of installing S3Shuttle is through its GEM file.
+
+== Setup
+
+S3Shuttle will look for its configuration file in /etc/s3_shuttle/s3_shuttle.yml see example for a guidline.
+
+Also required are S3Shuttle's .log, .pid and .queue files.
+These should be available with write permissions in the places specified by the configuration file.
+By default these would be:
+* /var/s3_shuttle/s3_shuttle.log
+* /var/s3_shuttle/s3_shuttle.pid
+* /var/s3_shuttle/s3_shuttle.queue
+
+== Starting/Stopping S3Shuttle
+
+The following commands are available to control the server daemon:
+* s3_shuttle_start
+* s3_shuttle_stop
+
+== Usage Example
+
+require 's3_shuttle'
+shuttle = S3Shuttle::Server.connection
+shuttle.add(
+	"filename" => "my_file.ext",
+	"path" => "/path/to/my_file.ext",
+	"bucket" => "my_bucket_on_s3",
+	"access" => "public_read"
+)
+
+== License
+
+S3Shuttle is released under the MIT license.
+
+== Support
+
+jamie@frankiandjonny.com

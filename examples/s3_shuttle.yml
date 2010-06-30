@@ -1,0 +1,8 @@
+host: localhost
+port: 26001
+queue_path: /var/s3_shuttle/s3_shuttle.queue
+log_path: /var/s3_shuttle/s3_shuttle.log
+pid_path: /var/s3_shuttle/s3_shuttle.pid
+credentials:
+  access_key_id: abcabcabcabcabcabca
+  secret_access_key: abcabcabcabcabcabca
